@@ -7,30 +7,27 @@ const express = require("express")
 // Initialize the app variable
 const app = express()
 
-//
-// MIDDLEWARE
-app.set('views', __dirname + '/views')
-app.set('view engine', 'jsx')
-app.engine('jsx', require('express-react-views').createEngine())
+// Configure body-parser for JSON
+app.use(express.json())
 
-//
+const mongoose = require('mongoose')
+
+mongoose.set("strictQuery", true)
+mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true},
+        ()=>{console.log('connected to mongo: ', process.env.MONGO_URI)}
+    )
+
 
 // Import router from books.js
 const booksController = require("./controllers/books")
 app.use('/books', booksController)
 
-// Configure body-parser for JSON
-app.use(express.json())
 
 // Create a homepage route
 app.get('/', (req,res)=>{
     res.send('Hello World')
 })
 
-// BONUS: create another route
-app.get('/second', (req,res)=>{
-    res.send('Hi Computer')
-})
 
 // 404 Error Route needs to go below other routes!!
 app.get('*', (req,res)=>{
